@@ -34,16 +34,16 @@ class CocoDataset(CustomDataset):
     #            'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush')
 
     # The random selected 50 classes.
-    CLASSES = ('spoon', 'motorcycle', 'skis', 'bowl', 'clock', 'handbag', 'sports ball', 'bus',
-               'handbag', 'banana', 'backpack', 'toilet', 'orange', 'dog', 'fire hydrant',
-               'toilet', 'fire hydrant', 'parking meter', 'toilet', 'person', 'spoon',
-               'teddy bear', 'train', 'sports ball', 'couch', 'person', 'bird', 'spoon',
-               'knife', 'sandwich', 'cake', 'suitcase', 'traffic light', 'backpack', 'cat',
-               'teddy bear', 'elephant', 'sandwich', 'bear', 'cake', 'baseball bat', 'tv',
-               'zebra', 'suitcase', 'horse', 'couch', 'microwave', 'keyboard', 'toaster',
-               'bed', 'vase', 'boat', 'banana', 'bus', 'truck', 'handbag', 'fork', 'oven', 'boat',
-               'kite', 'banana', 'carrot', 'hair drier', 'person', 'bird', 'sheep', 'spoon', 'dining table',
-               'toothbrush', 'cow', 'knife', 'bicycle', 'motorcycle', 'frisbee', 'keyboard')
+    # CLASSES = ('spoon', 'motorcycle', 'skis', 'bowl', 'clock', 'handbag', 'sports ball', 'bus',
+    #            'handbag', 'banana', 'backpack', 'toilet', 'orange', 'dog', 'fire hydrant',
+    #            'toilet', 'fire hydrant', 'parking meter', 'toilet', 'person', 'spoon',
+    #            'teddy bear', 'train', 'sports ball', 'couch', 'person', 'bird', 'spoon',
+    #            'knife', 'sandwich', 'cake', 'suitcase', 'traffic light', 'backpack', 'cat',
+    #            'teddy bear', 'elephant', 'sandwich', 'bear', 'cake', 'baseball bat', 'tv',
+    #            'zebra', 'suitcase', 'horse', 'couch', 'microwave', 'keyboard', 'toaster',
+    #            'bed', 'vase', 'boat', 'banana', 'bus', 'truck', 'handbag', 'fork', 'oven', 'boat',
+    #            'kite', 'banana', 'carrot', 'hair drier', 'person', 'bird', 'sheep', 'spoon', 'dining table',
+    #            'toothbrush', 'cow', 'knife', 'bicycle', 'motorcycle', 'frisbee', 'keyboard')
 
     def load_annotations(self, ann_file):
         """Load annotation from COCO style annotation file.
