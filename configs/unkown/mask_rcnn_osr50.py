@@ -44,7 +44,7 @@ model = dict(
             in_channels=256,
             fc_out_channels=1024,
             roi_feat_size=7,
-            num_classes=40,
+            num_classes=50,
             bbox_coder=dict(
                 type='DeltaXYWHBBoxCoder',
                 target_means=[0., 0., 0., 0.],
@@ -63,7 +63,7 @@ model = dict(
             num_convs=4,
             in_channels=256,
             conv_out_channels=256,
-            num_classes=40,
+            num_classes=50,
             loss_mask=dict(
                 type='CrossEntropyLoss', use_mask=True, loss_weight=1.0))))
 # model training and testing settings
@@ -163,12 +163,12 @@ data = dict(
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/instances_val2017_OSR40.json',
+        ann_file=data_root + 'annotations/instances_val2017_OSR50.json',
         img_prefix=data_root + 'val2017/',
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/instances_val2017_OSR40.json',
+        ann_file=data_root + 'annotations/instances_val2017_OSR50.json',
         img_prefix=data_root + 'val2017/',
         pipeline=test_pipeline))
 evaluation = dict(metric=[ 'segm'])
