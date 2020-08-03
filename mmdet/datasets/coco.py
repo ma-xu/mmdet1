@@ -33,15 +33,17 @@ class CocoDataset(CustomDataset):
     #            'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock',
     #            'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush')
 
-    # simply keep the first 40 classes
-    CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-               'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
-               'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-               'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
-               'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-               'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-               'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
-               'bottle')
+    # The random selected 50 classes.
+    CLASSES = ('spoon', 'motorcycle', 'skis', 'bowl', 'clock', 'handbag', 'sports ball', 'bus',
+               'handbag', 'banana', 'backpack', 'toilet', 'orange', 'dog', 'fire hydrant',
+               'toilet', 'fire hydrant', 'parking meter', 'toilet', 'person', 'spoon',
+               'teddy bear', 'train', 'sports ball', 'couch', 'person', 'bird', 'spoon',
+               'knife', 'sandwich', 'cake', 'suitcase', 'traffic light', 'backpack', 'cat',
+               'teddy bear', 'elephant', 'sandwich', 'bear', 'cake', 'baseball bat', 'tv',
+               'zebra', 'suitcase', 'horse', 'couch', 'microwave', 'keyboard', 'toaster',
+               'bed', 'vase', 'boat', 'banana', 'bus', 'truck', 'handbag', 'fork', 'oven', 'boat',
+               'kite', 'banana', 'carrot', 'hair drier', 'person', 'bird', 'sheep', 'spoon', 'dining table',
+               'toothbrush', 'cow', 'knife', 'bicycle', 'motorcycle', 'frisbee', 'keyboard')
 
     def load_annotations(self, ann_file):
         """Load annotation from COCO style annotation file.
@@ -54,13 +56,14 @@ class CocoDataset(CustomDataset):
         """
 
         self.coco = COCO(ann_file)
-        # self.cat_ids = self.coco.get_cat_ids(cat_names=self.CLASSES)
-        self.cat_ids = list(range(1,len(self.coco.get_cat_ids(cat_names=self.CLASSES))+1))
-        for i in range(10):
-            print("____________running load_annotations____________")
+        self.cat_ids = self.coco.get_cat_ids(cat_names=self.CLASSES)
+        # self.cat_ids = list(range(1,len(self.coco.get_cat_ids(cat_names=self.CLASSES))+1))
+
+        print("____________running load_annotations____________")
         print("________start: cat_ids_____________")
         print(self.cat_ids)
         print("________end  : cat_ids_____________")
+
         self.cat2label = {cat_id: i for i, cat_id in enumerate(self.cat_ids)}
         self.img_ids = self.coco.get_img_ids()
         data_infos = []
