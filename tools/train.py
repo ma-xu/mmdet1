@@ -136,14 +136,6 @@ def main():
         model.roi_head.bbox_head.centroids = centroids
         logger.info(f'Initialized centroids from {cfg.centroids_from}')
 
-    rank, _ = get_dist_info()
-    if rank == 0:
-        print("____________Debug by Xu_______________")
-        print("model is: ")
-        print(model)
-        print("Config cfg is:")
-        print(cfg)
-        print("____________End debug by Xu_______________")
 
 
     datasets = [build_dataset(cfg.data.train)]
