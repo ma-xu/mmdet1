@@ -7,7 +7,7 @@ import time
 import mmcv
 import torch
 from mmcv import Config, DictAction
-from mmcv.runner import init_dist
+from mmcv.runner import init_dist, get_dist_info
 
 from mmdet import __version__
 from mmdet.apis import set_random_seed, train_detector
@@ -125,12 +125,14 @@ def main():
     model = build_detector(
         cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
 
-    print("____________Debug by Xu_______________")
-    print("model is: ")
-    print(model)
-    print("Config cfg is:")
-    print(cfg)
-    print("____________End debug by Xu_______________")
+    rank, _ = get_dist_info()
+    if rank == 0:
+        print("____________Debug by Xu_______________")
+        print("model is: ")
+        print(model)
+        print("Config cfg is:")
+        print(cfg)
+        print("____________End debug by Xu_______________")
 
 
     datasets = [build_dataset(cfg.data.train)]
