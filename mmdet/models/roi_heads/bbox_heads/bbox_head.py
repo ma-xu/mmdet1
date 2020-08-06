@@ -167,6 +167,9 @@ class BBoxHead(nn.Module):
                     reduction_override=reduction_override)
                 print(accuracy(cls_score, labels))
                 print(f"cls_score 2: {cls_score}")
+                print(f'cls_score.shape {cls_score.shape}')
+                print(f'labels {labels}')
+                print(f'labels shape {labels.shape}')
                 losses['acc'] = accuracy(cls_score, labels)
         if bbox_pred is not None:
             bg_class_ind = self.num_classes
