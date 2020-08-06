@@ -125,6 +125,15 @@ def main():
     model = build_detector(
         cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
 
+
+    # Added by Nokia Intern Xu Ma
+    # Load initial centroids
+    if cfg.centroids_from is not None:
+        centroids = mmcv.load(cfg.centroids_from)
+
+
+
+
     rank, _ = get_dist_info()
     if rank == 0:
         print("____________Debug by Xu_______________")

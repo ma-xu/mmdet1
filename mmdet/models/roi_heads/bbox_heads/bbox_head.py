@@ -52,7 +52,7 @@ class BBoxHead(nn.Module):
 
         # Added by Nokia Intern Xu Ma
         # for centriods
-        self.register_buffer("centroids", torch.zeros(num_classes + 1,num_classes + 1))
+        self.register_buffer("centroids", torch.zeros(num_classes,num_classes))
 
         in_channels = self.in_channels
         if self.with_avg_pool:

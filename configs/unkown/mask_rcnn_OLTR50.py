@@ -199,3 +199,6 @@ log_level = 'INFO'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
+
+# Initial centroids paths
+centroids_from = '/home/xuma/mmdet/work_dirs/mask_rcnn_osr50/centroids.pkl'
