@@ -27,7 +27,7 @@ class ModulatedAttLayer(nn.Module):
         self.phi = nn.Conv2d(self.in_channels, self.inter_channels, kernel_size=1)
         self.conv_mask = nn.Conv2d(self.inter_channels, self.in_channels, kernel_size=1, bias=False)
         self.relu = nn.ReLU(inplace=True)
-        self.avgpool = nn.AvgPool2d(7, stride=1)
+        self.adp_pool = nn.AdaptiveAvgPool2d(7)
         self.fc_spatial = nn.Linear(7 * 7 * self.in_channels, 7 * 7)
         # self.fc_channel = nn.Linear(7 * 7 * self.in_channels, self.in_channels)
         # self.fc_selector = nn.Linear(7 * 7 * self.in_channels, 1)
@@ -43,7 +43,8 @@ class ModulatedAttLayer(nn.Module):
             m.bias.data.zero_()
         self.conv_mask.weight.data.zero_()
 
-    def embedded_gaussian(self, x):
+    def embedded_gaussian(self, input):
+        x = self.adp_pool(input)
         # embedded_gaussian cal self-attention, which may not strong enough
         batch_size = x.size(0)
 
@@ -69,7 +70,7 @@ class ModulatedAttLayer(nn.Module):
         spatial_att = spatial_att.view(-1, 7, 7).unsqueeze(1)
         spatial_att = spatial_att.expand(-1, self.in_channels, -1, -1)
 
-        final = spatial_att * mask + x
+        final = F.interpolate(spatial_att * mask, input.shape[2:]) + inputs
 
         return final
 
