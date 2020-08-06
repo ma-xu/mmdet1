@@ -70,7 +70,7 @@ class ModulatedAttLayer(nn.Module):
         spatial_att = spatial_att.view(-1, 7, 7).unsqueeze(1)
         spatial_att = spatial_att.expand(-1, self.in_channels, -1, -1)
 
-        final = F.interpolate(spatial_att * mask, input.shape[2:]) + inputs
+        final = F.interpolate(spatial_att * mask, input.shape[2:]) + input
 
         return final
 
