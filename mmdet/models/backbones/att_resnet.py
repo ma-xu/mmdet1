@@ -27,7 +27,6 @@ class ModulatedAttLayer(nn.Module):
         self.phi = nn.Conv2d(self.in_channels, self.inter_channels, kernel_size=1)
         self.conv_mask = nn.Conv2d(self.inter_channels, self.in_channels, kernel_size=1, bias=False)
         self.relu = nn.ReLU(inplace=True)
-
         self.avgpool = nn.AvgPool2d(7, stride=1)
         self.fc_spatial = nn.Linear(7 * 7 * self.in_channels, 7 * 7)
         # self.fc_channel = nn.Linear(7 * 7 * self.in_channels, self.in_channels)
