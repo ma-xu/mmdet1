@@ -7,6 +7,7 @@ from mmdet.core import (auto_fp16, build_bbox_coder, force_fp32, multi_apply,
                         multiclass_nms)
 from mmdet.models.builder import HEADS, build_loss
 from mmdet.models.losses import accuracy
+from mmdet.oltr import MetaEmbeddingClassifier
 
 
 @HEADS.register_module()
@@ -60,8 +61,10 @@ class BBoxHead(nn.Module):
         else:
             in_channels *= self.roi_feat_area
         if self.with_cls:
-            # need to add background class
+            # # need to add background class
             self.fc_cls = nn.Linear(in_channels, num_classes + 1)
+            # modified by Nokia Intern Xu Ma
+            # self.fc_cls = MetaEmbeddingClassifier(in_channels, num_classes + 1)
         if self.with_reg:
             out_dim_reg = 4 if reg_class_agnostic else 4 * num_classes
             self.fc_reg = nn.Linear(in_channels, out_dim_reg)
