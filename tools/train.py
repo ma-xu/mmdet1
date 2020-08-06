@@ -130,9 +130,11 @@ def main():
     # Load initial centroids
     if cfg.centroids_from is not None:
         centroids = mmcv.load(cfg.centroids_from)
-
-
-
+        if not isinstance(centroids, torch.Tensor):
+            # centroids would be dict from openmax
+            centroids = torch.tensor([centroids[i] for i in range(1,len(centroids)+1)])
+        model.roi_head.bbox_head.centroids = centroids
+        logger.info(f'Initialized centroids from {cfg.centroids_from}')
 
     rank, _ = get_dist_info()
     if rank == 0:
