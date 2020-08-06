@@ -50,6 +50,10 @@ class BBoxHead(nn.Module):
         self.loss_cls = build_loss(loss_cls)
         self.loss_bbox = build_loss(loss_bbox)
 
+        # Added by Nokia Intern Xu Ma
+        # for centriods
+        self.register_buffer("centroids", torch.zeros(num_classes + 1,num_classes + 1))
+
         in_channels = self.in_channels
         if self.with_avg_pool:
             self.avg_pool = nn.AvgPool2d(self.roi_feat_size)
