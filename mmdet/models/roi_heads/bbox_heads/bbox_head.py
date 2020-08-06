@@ -85,6 +85,7 @@ class BBoxHead(nn.Module):
             x = self.avg_pool(x)
         x = x.view(x.size(0), -1)
         cls_score = self.fc_cls(x) if self.with_cls else None
+        print(f"cls_score 1: {cls_score}")
         bbox_pred = self.fc_reg(x) if self.with_reg else None
         return cls_score, bbox_pred
 
@@ -165,6 +166,7 @@ class BBoxHead(nn.Module):
                     avg_factor=avg_factor,
                     reduction_override=reduction_override)
                 print(accuracy(cls_score, labels))
+                print(f"cls_score 2: {cls_score}")
                 losses['acc'] = accuracy(cls_score, labels)
         if bbox_pred is not None:
             bg_class_ind = self.num_classes
