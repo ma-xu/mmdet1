@@ -31,10 +31,6 @@ class MetaEmbedding_Classifier(nn.Module):
         centroids_expand = centroids.clone().unsqueeze(0).expand(batch_size, -1, -1)
         keys_memory = centroids.clone()
 
-        print(x_expand.shape)
-        print(centroids_expand.shape)
-        print(x.shape)
-        print(centroids.shape)
         # computing reachability
         dist_cur = torch.norm(x_expand - centroids_expand, 2, 2)
         values_nn, labels_nn = torch.sort(dist_cur, 1)
