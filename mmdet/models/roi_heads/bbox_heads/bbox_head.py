@@ -7,7 +7,7 @@ from mmdet.core import (auto_fp16, build_bbox_coder, force_fp32, multi_apply,
                         multiclass_nms)
 from mmdet.models.builder import HEADS, build_loss
 from mmdet.models.losses import accuracy
-from mmdet.oltr import MetaEmbeddingClassifier
+
 
 
 @HEADS.register_module()
@@ -85,7 +85,6 @@ class BBoxHead(nn.Module):
             x = self.avg_pool(x)
         x = x.view(x.size(0), -1)
         cls_score = self.fc_cls(x) if self.with_cls else None
-        print(f"cls_score 1: {cls_score}")
         bbox_pred = self.fc_reg(x) if self.with_reg else None
         return cls_score, bbox_pred
 
