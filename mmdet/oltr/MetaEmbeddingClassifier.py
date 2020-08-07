@@ -15,6 +15,11 @@ class MetaEmbedding_Classifier(nn.Module):
         self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
         
     def forward(self, x,centroids):
+        # Added by Nokia Intern Xu Ma
+        # consider the background class: padding zero
+        centroids = torch.cat([centroids,torch.zeros(1,centroids.shape[1])],dim=0)
+        centroids = torch.cat([centroids, torch.zeros(centroids.shape[0],1)], dim=1)
+
         # storing direct feature
         direct_feature = x.clone()
 
