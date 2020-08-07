@@ -14,8 +14,8 @@ class MetaEmbedding_Classifier(nn.Module):
         self.fc_selector = nn.Linear(feat_dim, feat_dim)
         self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
         
-    def forward(self, x, centroids, *args):
-        
+    def forward(self, x):
+        centroids=torch.rand(2,3)
         # storing direct feature
         direct_feature = x.clone()
 
