@@ -133,7 +133,8 @@ def main():
         if not isinstance(centroids, torch.Tensor):
             # centroids would be dict from openmax
             centroids = torch.tensor([centroids[i] for i in range(1,len(centroids)+1)])
-        model.roi_head.bbox_head.centroids = centroids
+        model.roi_head.bbox_head.centroids = torch.tensor(data=centroids, dtype=torch.float,
+                                                          device=model.roi_head.bbox_head.centroids.device)
         logger.info(f'Initialized centroids from {cfg.centroids_from}')
 
 
