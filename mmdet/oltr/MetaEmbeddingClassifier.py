@@ -17,7 +17,7 @@ class MetaEmbedding_Classifier(nn.Module):
     def forward(self, x,centroids):
         # Added by Nokia Intern Xu Ma
         # consider the background class: padding zero
-        centroids = torch.cat([centroids,torch.zeros(1,centroids.shape[1])],dim=0)
+        centroids = torch.cat([centroids.float(),torch.zeros(1,centroids.shape[1])],dim=0)
         centroids = torch.cat([centroids, torch.zeros(centroids.shape[0],1)], dim=1)
 
         # storing direct feature
