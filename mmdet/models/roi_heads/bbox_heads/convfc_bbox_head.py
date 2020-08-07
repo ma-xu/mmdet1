@@ -3,7 +3,7 @@ from mmcv.cnn import ConvModule
 
 from mmdet.models.builder import HEADS
 from .bbox_head import BBoxHead
-from mmdet.oltr import MetaEmbeddingClassifier
+from mmdet.oltr.MetaEmbeddingClassifier import MetaEmbedding_Classifier
 
 
 @HEADS.register_module()
@@ -79,7 +79,7 @@ class ConvFCBBoxHead(BBoxHead):
         if self.with_cls:
             # self.fc_cls = nn.Linear(self.cls_last_dim, self.num_classes + 1)
             # modified by Nokia Intern Xu Ma
-            self.fc_cls = MetaEmbeddingClassifier(self.cls_last_dim, self.num_classes + 1)
+            self.fc_cls = MetaEmbedding_Classifier(self.cls_last_dim, self.num_classes + 1,self.centroids)
         if self.with_reg:
             out_dim_reg = (4 if self.reg_class_agnostic else 4 *
                            self.num_classes)
