@@ -77,9 +77,9 @@ class ConvFCBBoxHead(BBoxHead):
         self.relu = nn.ReLU(inplace=True)
         # reconstruct fc_cls and fc_reg since input channels are changed
         if self.with_cls:
-            # self.fc_cls = nn.Linear(self.cls_last_dim, self.num_classes + 1)
+            self.fc_cls = nn.Linear(self.cls_last_dim, self.num_classes + 1)
             # modified by Nokia Intern Xu Ma
-            self.fc_cls = MetaEmbedding_Classifier(self.cls_last_dim, self.num_classes + 1)
+            self.fc_cls_meta = MetaEmbedding_Classifier(self.num_classes + 1, self.num_classes + 1)
         if self.with_reg:
             out_dim_reg = (4 if self.reg_class_agnostic else 4 *
                            self.num_classes)
@@ -171,7 +171,8 @@ class ConvFCBBoxHead(BBoxHead):
         for fc in self.reg_fcs:
             x_reg = self.relu(fc(x_reg))
 
-        cls_score,_ = self.fc_cls(x_cls, self.centroids) if self.with_cls else None
+        cls_score = self.fc_cls(x_cls) if self.with_cls else None
+        cls_score,_ = self.fc_cls_meta(cls_score, self.centroids) if self.with_cls else None
         bbox_pred = self.fc_reg(x_reg) if self.with_reg else None
         return cls_score, bbox_pred
 
