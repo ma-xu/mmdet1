@@ -182,7 +182,7 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[11, 16])
+    step=[16, 22])
 total_epochs = 24
 
 checkpoint_config = dict(interval=1)
@@ -197,7 +197,7 @@ log_config = dict(
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = None
-resume_from = None
+resume_from = 'work_dirs/mask_rcnn_OLTR50/epoch_4.pth'
 workflow = [('train', 1)]
 
 # Initial centroids paths
