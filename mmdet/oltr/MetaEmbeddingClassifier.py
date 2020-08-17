@@ -41,9 +41,9 @@ class MetaEmbedding_Classifier(nn.Module):
         dist_cur = torch.norm(x_expand - centroids_expand, 2, 2)
         values_nn, labels_nn = torch.sort(dist_cur, 1)
         scale = 10.0
-        print(f"values_nn[:, 0]  contains 0 is {(values_nn[:, 0]==0).any()}")
-        print(f"values_nn[:, 0]  shape {(values_nn[:, 0]).shape}, "
-              f"max {(values_nn[:, 0]).max()} , min {(values_nn[:, 0]).min()}")
+        # print(f"values_nn[:, 0]  contains 0 is {(values_nn[:, 0]==0).any()}")
+        # print(f"values_nn[:, 0]  shape {(values_nn[:, 0]).shape}, "
+        #       f"max {(values_nn[:, 0]).max()} , min {(values_nn[:, 0]).min()}")
         reachability = (scale / (values_nn[:, 0] + 1e-5)).unsqueeze(1).expand(-1, feat_size)
 
         """
@@ -58,7 +58,7 @@ class MetaEmbedding_Classifier(nn.Module):
 
         x = reachability * (direct_feature + concept_selector * memory_feature)
         """
-        print(f" NAN in reach: {torch.isnan(reachability).any()}")
+        # print(f" NAN in reach: {torch.isnan(reachability).any()}")
         x = reachability * direct_feature
         
         # storing infused feature
