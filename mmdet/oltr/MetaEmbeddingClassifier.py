@@ -42,6 +42,8 @@ class MetaEmbedding_Classifier(nn.Module):
         values_nn, labels_nn = torch.sort(dist_cur, 1)
         scale = 10.0
         print(f"values_nn[:, 0]  contains 0 is {(values_nn[:, 0]==0).any()}")
+        print(f"values_nn[:, 0]  shape {(values_nn[:, 0]).shape()}, "
+              f"max {(values_nn[:, 0]).max()} , min {(values_nn[:, 0]).min()}")
         reachability = (scale / values_nn[:, 0]).unsqueeze(1).expand(-1, feat_size)
 
         """
