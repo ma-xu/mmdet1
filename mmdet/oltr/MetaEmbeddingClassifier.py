@@ -12,7 +12,8 @@ class MetaEmbedding_Classifier(nn.Module):
         self.num_classes = num_classes
         self.fc_hallucinator = nn.Linear(feat_dim, num_classes)
         self.fc_selector = nn.Linear(feat_dim, feat_dim)
-        self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
+        # self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
+        self.normal_classifier = nn.Linear(feat_dim, num_classes)
         
     def forward(self, x,centroids):
         # Added by Nokia Intern Xu Ma
@@ -52,7 +53,8 @@ class MetaEmbedding_Classifier(nn.Module):
         # storing infused feature
         infused_feature = concept_selector * memory_feature
         
-        logits = self.cosnorm_classifier(x)
+        # logits = self.cosnorm_classifier(x)
+        logits = self.normal_classifier(x)
 
         return logits, [direct_feature, infused_feature]
     
