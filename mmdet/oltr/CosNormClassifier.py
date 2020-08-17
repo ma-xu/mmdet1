@@ -22,7 +22,7 @@ class CosNorm_Classifier(nn.Module):
         norm_x = torch.norm(input.clone(), 2, 1, keepdim=True)
         ex = (norm_x / (1 + norm_x)) * (input / norm_x)
         print("ex is {}".format(ex))
-        ew = self.weight / (torch.norm(self.weight, 2, 1, keepdim=True) + 1e-5)
+        ew = self.weight / torch.norm(self.weight, 2, 1, keepdim=True)
         print("ew is {}".format(ew))
         return torch.mm(self.scale * ex, ew.t())
         # return torch.tensor()
