@@ -172,6 +172,7 @@ class ConvFCBBoxHead(BBoxHead):
             x_reg = self.relu(fc(x_reg))
 
         cls_score = self.fc_cls(x_cls) if self.with_cls else None
+        print(f"cls_score is {cls_score}")
         cls_score,_ = self.fc_cls_meta(cls_score, self.centroids) if self.with_cls else None
         # print(cls_score)
         bbox_pred = self.fc_reg(x_reg) if self.with_reg else None

@@ -15,7 +15,6 @@ class MetaEmbedding_Classifier(nn.Module):
         self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
         
     def forward(self, x,centroids):
-        print(f"x is {x}")
         # Added by Nokia Intern Xu Ma
         # # consider the background class: padding zero
         # centroids = torch.cat([centroids,centroids[:,-1]-centroids[:,-1]],dim=0)
@@ -37,18 +36,17 @@ class MetaEmbedding_Classifier(nn.Module):
         values_nn, labels_nn = torch.sort(dist_cur, 1)
         scale = 10.0
         reachability = (scale / values_nn[:, 0]).unsqueeze(1).expand(-1, feat_size)
-        print("reachability is {}".format(reachability))
+
 
         # computing memory feature by querying and associating visual memory
         values_memory = self.fc_hallucinator(x.clone())
         values_memory = values_memory.softmax(dim=1)
         memory_feature = torch.matmul(values_memory, keys_memory)
-        print(f"memory_feature is  {memory_feature}")
 
         # computing concept selector
         concept_selector = self.fc_selector(x.clone())
         concept_selector = concept_selector.tanh()
-        print(f"concept_selector is  {concept_selector}")
+
         x = reachability * (direct_feature + concept_selector * memory_feature)
 
         # storing infused feature
