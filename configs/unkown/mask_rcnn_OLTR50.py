@@ -197,7 +197,7 @@ log_config = dict(
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = None
-resume_from = 'work_dirs/mask_rcnn_OLTR50/epoch_4.pth'
+resume_from = './work_dirs/mask_rcnn_OLTR50/epoch_4.pth'
 workflow = [('train', 1)]
 
 # Initial centroids paths
