@@ -346,7 +346,7 @@ def test_bbox_head_loss():
     num_sampled = sum(len(res.bboxes) for res in sampling_results)
     dummy_feats = torch.rand(num_sampled, 8 * 3 * 3)
     cls_scores, bbox_preds = self.forward(dummy_feats)
-    print("cls_scores here")
+
     losses = self.loss(cls_scores, bbox_preds, rois, labels, label_weights,
                        bbox_targets, bbox_weights)
     assert losses.get('loss_cls', 0) > 0, 'cls-loss should be non-zero'
