@@ -16,6 +16,7 @@ class MetaEmbedding_Classifier(nn.Module):
         self.normal_classifier = nn.Linear(feat_dim, num_classes)
         
     def forward(self, x,centroids):
+        print(f"x is {x}")
         # Added by Nokia Intern Xu Ma
         # # consider the background class: padding zero
         # centroids = torch.cat([centroids,centroids[:,-1]-centroids[:,-1]],dim=0)
