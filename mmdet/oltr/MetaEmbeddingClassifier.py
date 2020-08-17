@@ -11,10 +11,10 @@ class MetaEmbedding_Classifier(nn.Module):
         super(MetaEmbedding_Classifier, self).__init__()
 
         self.num_classes = num_classes
-        """
+
         self.fc_hallucinator = nn.Linear(feat_dim, num_classes)
         self.fc_selector = nn.Linear(feat_dim, feat_dim)
-        """
+
         # self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
 
         self.normal_classifier = nn.Linear(feat_dim, num_classes)
@@ -46,7 +46,7 @@ class MetaEmbedding_Classifier(nn.Module):
         #       f"max {(values_nn[:, 0]).max()} , min {(values_nn[:, 0]).min()}")
         reachability = (scale / (values_nn[:, 0] + 1e-5)).unsqueeze(1).expand(-1, feat_size)
 
-        """
+
         # computing memory feature by querying and associating visual memory
         values_memory = self.fc_hallucinator(x.clone())
         values_memory = values_memory.softmax(dim=1)
@@ -57,9 +57,7 @@ class MetaEmbedding_Classifier(nn.Module):
         concept_selector = concept_selector.tanh()
 
         x = reachability * (direct_feature + concept_selector * memory_feature)
-        """
-        # print(f" NAN in reach: {torch.isnan(reachability).any()}")
-        x = reachability * direct_feature
+        
         
         # storing infused feature
         # infused_feature = concept_selector * memory_feature
