@@ -79,7 +79,7 @@ class ConvFCBBoxHead(BBoxHead):
         if self.with_cls:
             self.fc_cls = nn.Linear(self.cls_last_dim, self.num_classes + 1)
             # modified by Nokia Intern Xu Ma
-            # self.fc_cls_meta = MetaEmbedding_Classifier(self.num_classes + 1, self.num_classes + 1)
+            self.fc_cls_meta = MetaEmbedding_Classifier(self.num_classes + 1, self.num_classes + 1)
         if self.with_reg:
             out_dim_reg = (4 if self.reg_class_agnostic else 4 *
                            self.num_classes)
@@ -174,7 +174,7 @@ class ConvFCBBoxHead(BBoxHead):
 
         cls_score = self.fc_cls(x_cls) if self.with_cls else None
 
-        # cls_score,_ = self.fc_cls_meta(cls_score, self.centroids) if self.with_cls else None
+        cls_score,_ = self.fc_cls_meta(cls_score, self.centroids) if self.with_cls else None
         # print(cls_score)
         bbox_pred = self.fc_reg(x_reg) if self.with_reg else None
         return cls_score, bbox_pred
