@@ -15,9 +15,9 @@ class MetaEmbedding_Classifier(nn.Module):
         self.fc_hallucinator = nn.Linear(feat_dim, num_classes)
         self.fc_selector = nn.Linear(feat_dim, feat_dim)
 
-        # self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
+        self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
 
-        self.normal_classifier = nn.Linear(feat_dim, num_classes)
+        # self.normal_classifier = nn.Linear(feat_dim, num_classes)
         
     def forward(self, x,centroids):
 
@@ -57,14 +57,14 @@ class MetaEmbedding_Classifier(nn.Module):
         concept_selector = concept_selector.tanh()
 
         x = reachability * (direct_feature + concept_selector * memory_feature)
-        
+
         
         # storing infused feature
         # infused_feature = concept_selector * memory_feature
         
-        # logits = self.cosnorm_classifier(x)
+        logits = self.cosnorm_classifier(x)
         
-        logits = self.normal_classifier(x)
+        # logits = self.normal_classifier(x)
 
         # return logits, [direct_feature, infused_feature]
         return logits, [logits]
