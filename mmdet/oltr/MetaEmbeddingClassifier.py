@@ -9,13 +9,16 @@ class MetaEmbedding_Classifier(nn.Module):
     
     def __init__(self, feat_dim=2048, num_classes=1000):
         super(MetaEmbedding_Classifier, self).__init__()
+        """
         self.num_classes = num_classes
         self.fc_hallucinator = nn.Linear(feat_dim, num_classes)
         self.fc_selector = nn.Linear(feat_dim, feat_dim)
         # self.cosnorm_classifier = CosNorm_Classifier(feat_dim, num_classes)
+        """
         self.normal_classifier = nn.Linear(feat_dim, num_classes)
         
     def forward(self, x,centroids):
+        """
         # Added by Nokia Intern Xu Ma
         # # consider the background class: padding zero
         # centroids = torch.cat([centroids,centroids[:,-1]-centroids[:,-1]],dim=0)
@@ -54,10 +57,12 @@ class MetaEmbedding_Classifier(nn.Module):
         infused_feature = concept_selector * memory_feature
         
         # logits = self.cosnorm_classifier(x)
+        """
         logits = self.normal_classifier(x)
 
-        return logits, [direct_feature, infused_feature]
-    
+        # return logits, [direct_feature, infused_feature]
+        return logits, [logits]
+
 # def create_model(feat_dim=2048, num_classes=1000, stage1_weights=False, dataset=None, test=False, *args):
 #     print('Loading Meta Embedding Classifier.')
 #     clf = MetaEmbedding_Classifier(feat_dim, num_classes)
