@@ -42,10 +42,12 @@ class MetaEmbedding_Classifier(nn.Module):
         values_memory = self.fc_hallucinator(x.clone())
         values_memory = values_memory.softmax(dim=1)
         memory_feature = torch.matmul(values_memory, keys_memory)
+        print(f"memory_feature is  {memory_feature}")
 
         # computing concept selector
         concept_selector = self.fc_selector(x.clone())
-        concept_selector = concept_selector.tanh() 
+        concept_selector = concept_selector.tanh()
+        print(f"concept_selector is  {concept_selector}")
         x = reachability * (direct_feature + concept_selector * memory_feature)
 
         # storing infused feature
