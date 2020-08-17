@@ -56,8 +56,8 @@ class MetaEmbedding_Classifier(nn.Module):
 
         x = reachability * (direct_feature + concept_selector * memory_feature)
         """
-        # x = reachability * direct_feature
-        x = direct_feature
+        print(f" NAN in reach: {torch.isnan(reachability).any()}")
+        x = reachability * direct_feature
         
         # storing infused feature
         # infused_feature = concept_selector * memory_feature
