@@ -36,6 +36,7 @@ class MetaEmbedding_Classifier(nn.Module):
         values_nn, labels_nn = torch.sort(dist_cur, 1)
         scale = 10.0
         reachability = (scale / values_nn[:, 0]).unsqueeze(1).expand(-1, feat_size)
+        print("reachability is {}".format(reachability))
 
         # computing memory feature by querying and associating visual memory
         values_memory = self.fc_hallucinator(x.clone())
