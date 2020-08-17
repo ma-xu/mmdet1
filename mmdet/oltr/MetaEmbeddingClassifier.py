@@ -44,7 +44,7 @@ class MetaEmbedding_Classifier(nn.Module):
         print(f"values_nn[:, 0]  contains 0 is {(values_nn[:, 0]==0).any()}")
         print(f"values_nn[:, 0]  shape {(values_nn[:, 0]).shape}, "
               f"max {(values_nn[:, 0]).max()} , min {(values_nn[:, 0]).min()}")
-        reachability = (scale / values_nn[:, 0]).unsqueeze(1).expand(-1, feat_size)
+        reachability = (scale / (values_nn[:, 0] + 1e-5)).unsqueeze(1).expand(-1, feat_size)
 
         """
         # computing memory feature by querying and associating visual memory
