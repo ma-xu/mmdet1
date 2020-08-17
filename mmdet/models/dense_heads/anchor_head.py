@@ -618,6 +618,7 @@ class AnchorHead(BaseDenseHead):
                 scores = cls_score.sigmoid()
             else:
                 scores = cls_score.softmax(-1)
+                print("score here")
             bbox_pred = bbox_pred.permute(1, 2, 0).reshape(-1, 4)
             nms_pre = cfg.get('nms_pre', -1)
             if nms_pre > 0 and scores.shape[0] > nms_pre:
