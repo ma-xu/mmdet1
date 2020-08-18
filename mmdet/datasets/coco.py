@@ -59,7 +59,8 @@ class CocoDataset(CustomDataset):
 
         self.coco = COCO(ann_file)
         # self.cat_ids = self.coco.get_cat_ids(cat_names=self.CLASSES)
-        self.cat_ids = list(range(1,50+1))
+        # self.cat_ids = list(range(1,50+1))
+        self.cat_ids = list(range(1, 51 + 1))  # for evaluation
 
         # print("____________running load_annotations____________")
         # print("________start: cat_ids_____________")
@@ -254,6 +255,7 @@ class CocoDataset(CustomDataset):
 
     def _segm2json(self, results):
         """Convert instance segmentation results to COCO json style."""
+        score_threshold = 0.1
         bbox_json_results = []
         segm_json_results = []
         for idx in range(len(self)):
@@ -267,7 +269,14 @@ class CocoDataset(CustomDataset):
                     data['image_id'] = img_id
                     data['bbox'] = self.xyxy2xywh(bboxes[i])
                     data['score'] = float(bboxes[i][4])
-                    data['category_id'] = self.cat_ids[label]
+                    # data['category_id'] = self.cat_ids[label]
+                    if data['score'] > score_threshold:  # for softmax with threshold
+                        try:
+                            data['category_id'] = self.cat_ids[label]
+                        except:
+                            data['category_id'] = 51
+                    else:
+                        data['category_id'] = 51
                     bbox_json_results.append(data)
 
                 # segm results
@@ -283,7 +292,14 @@ class CocoDataset(CustomDataset):
                     data['image_id'] = img_id
                     data['bbox'] = self.xyxy2xywh(bboxes[i])
                     data['score'] = float(mask_score[i])
-                    data['category_id'] = self.cat_ids[label]
+                    # data['category_id'] = self.cat_ids[label]
+                    if data['score'] > score_threshold:
+                        try:
+                            data['category_id'] = self.cat_ids[label]
+                        except:
+                            data['category_id'] = 51
+                    else:
+                        data['category_id'] = 51
                     if isinstance(segms[i]['counts'], bytes):
                         segms[i]['counts'] = segms[i]['counts'].decode()
                     data['segmentation'] = segms[i]
