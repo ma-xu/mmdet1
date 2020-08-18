@@ -255,7 +255,7 @@ class CocoDataset(CustomDataset):
 
     def _segm2json(self, results):
         """Convert instance segmentation results to COCO json style."""
-        score_threshold = 0.1
+        score_threshold = 0.2
         bbox_json_results = []
         segm_json_results = []
         for idx in range(len(self)):
