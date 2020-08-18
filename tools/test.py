@@ -37,12 +37,7 @@ def parse_args():
         nargs='+',
         help='evaluation metrics, which depends on the dataset, e.g., "bbox",'
         ' "segm", "proposal" for COCO, and "mAP", "recall" for PASCAL VOC')
-    parser.add_argument(
-        '--openeval',
-        type=str,
-        nargs='+',
-        help='evaluation metrics, which depends on the dataset, e.g., "bbox",'
-             ' "segm", "proposal" for COCO, and "mAP", "recall" for PASCAL VOC')
+    parser.add_argument('--openeval', action='store_true')
     parser.add_argument('--show', action='store_true', help='show results')
     parser.add_argument(
         '--show-dir', help='directory where painted images will be saved')
@@ -168,9 +163,11 @@ def main():
         if args.format_only:
             dataset.format_results(outputs, **kwargs)
         if args.eval:
-            dataset.evaluate(outputs, args.eval, **kwargs)
-        if args.openeval:
-            dataset.evaluate(outputs, args.eval, **kwargs)
+
+            if args.openeval:
+                dataset.openevaluate(outputs, args.eval, **kwargs)
+            else:
+                dataset.evaluate(outputs, args.eval, **kwargs)
 
 
 if __name__ == '__main__':
