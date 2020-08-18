@@ -2,6 +2,8 @@ import itertools
 import logging
 import os.path as osp
 import tempfile
+import time
+import datetime
 
 import mmcv
 import numpy as np
@@ -515,6 +517,337 @@ class CocoDataset(CustomDataset):
                 eval_results[f'{metric}_mAP_copypaste'] = (
                     f'{ap[0]:.3f} {ap[1]:.3f} {ap[2]:.3f} {ap[3]:.3f} '
                     f'{ap[4]:.3f} {ap[5]:.3f}')
+        if tmp_dir is not None:
+            tmp_dir.cleanup()
+        return eval_results
+
+    def accumulate(self, cocoEval, p=None):
+        '''
+        Accumulate per image evaluation results and store the result in
+        self.eval
+
+        :param p: input params for evaluation
+        :return: None
+        '''
+        print('Accumulating evaluation results...')
+        tic = time.time()
+        if not cocoEval.evalImgs:
+            print('Please run evaluate() first')
+        # allows input customized parameters
+        if p is None:
+            p = cocoEval.params
+        p.catIds = p.catIds if p.useCats == 1 else [-1]
+        T = len(p.iouThrs)
+        R = len(p.recThrs)
+        K = len(p.catIds) if p.useCats else 1
+        A = len(p.areaRng)
+        M = len(p.maxDets)
+        precision = -np.ones(
+            (T, R, K, A, M))  # -1 for the precision of absent categories
+        recall = -np.ones((T, K, A, M))
+        scores = -np.ones((T, R, K, A, M))
+
+        # create dictionary for future indexing
+        _pe = cocoEval._paramsEval
+        catIds = _pe.catIds if _pe.useCats else [-1]
+        setK = set(catIds)
+        setA = set(map(tuple, _pe.areaRng))
+        setM = set(_pe.maxDets)
+        setI = set(_pe.imgIds)
+        # get inds to evaluate
+        k_list = [n for n, k in enumerate(p.catIds) if k in setK]
+        m_list = [m for n, m in enumerate(p.maxDets) if m in setM]
+        a_list = [
+            n for n, a in enumerate(map(lambda x: tuple(x), p.areaRng))
+            if a in setA
+        ]
+        i_list = [n for n, i in enumerate(p.imgIds) if i in setI]
+        I0 = len(_pe.imgIds)
+        A0 = len(_pe.areaRng)
+        # retrieve E at each category, area range, and max number of detections
+        for k, k0 in enumerate(k_list):
+            Nk = k0 * A0 * I0
+            for a, a0 in enumerate(a_list):
+                Na = a0 * I0
+                for m, maxDet in enumerate(m_list):
+                    E = [cocoEval.evalImgs[Nk + Na + i] for i in i_list]
+                    E = [e for e in E if e is not None]
+                    if len(E) == 0:
+                        continue
+                    dtScores = np.concatenate(
+                        [e['dtScores'][0:maxDet] for e in E])
+
+                    # different sorting method generates slightly different
+                    # results. mergesort is used to be consistent as Matlab
+                    # implementation.
+                    inds = np.argsort(-dtScores, kind='mergesort')
+                    dtScoresSorted = dtScores[inds]
+
+                    dtm = np.concatenate(
+                        [e['dtMatches'][:, 0:maxDet] for e in E], axis=1)[:,
+                          inds]
+                    dtIg = np.concatenate(
+                        [e['dtIgnore'][:, 0:maxDet] for e in E], axis=1)[:,
+                           inds]
+                    gtIg = np.concatenate([e['gtIgnore'] for e in E])
+                    npig = np.count_nonzero(gtIg == 0)
+                    if npig == 0:
+                        continue
+                    tps = np.logical_and(dtm, np.logical_not(dtIg))
+                    fps = np.logical_and(np.logical_not(dtm),
+                                         np.logical_not(dtIg))
+
+                    tp_sum = np.cumsum(tps, axis=1).astype(dtype=np.float)
+                    fp_sum = np.cumsum(fps, axis=1).astype(dtype=np.float)
+                    for t, (tp, fp) in enumerate(zip(tp_sum, fp_sum)):
+                        tp = np.array(tp)
+                        fp = np.array(fp)
+                        nd = len(tp)
+                        rc = tp / npig
+                        pr = tp / (fp + tp + np.spacing(1))
+                        q = np.zeros((R,))
+                        ss = np.zeros((R,))
+
+                        if nd:
+                            recall[t, k, a, m] = rc[-1]
+                        else:
+                            recall[t, k, a, m] = 0
+
+                        # numpy is slow without cython optimization for
+                        # accessing elements use python array gets significant
+                        # speed improvement
+                        pr = pr.tolist()
+                        q = q.tolist()
+
+                        for i in range(nd - 1, 0, -1):
+                            if pr[i] > pr[i - 1]:
+                                pr[i - 1] = pr[i]
+
+                        inds = np.searchsorted(rc, p.recThrs, side='left')
+                        try:
+                            for ri, pi in enumerate(inds):
+                                q[ri] = pr[pi]
+                                ss[ri] = dtScoresSorted[pi]
+                        except:  # noqa: E722
+                            pass
+                        precision[t, :, k, a, m] = np.array(q)
+                        scores[t, :, k, a, m] = np.array(ss)
+        cocoEval.eval = {
+            'params': p,
+            'counts': [T, R, K, A, M],
+            'date': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'precision': precision,
+            'recall': recall,
+            'scores': scores,
+        }
+        toc = time.time()
+        print('DONE (t={:0.2f}s).'.format(toc - tic))
+
+    def opensummarize(cocoEval):
+        '''
+        Compute and display summary metrics for evaluation results.
+        Note this functin can *only* be applied on the default parameter
+        setting
+        '''
+
+        def _summarize(ap=1, iouThr=None, areaRng='all', maxDets=100, F1=False, open_range=None):
+            p = cocoEval.params
+            iStr = '{:<18} {} @[ IoU={:<9} | area={:>6s} | maxDets={:>3d} ] = {:0.3f}'  # noqa: E501
+            titleStr = 'Average Precision' if ap == 1 else 'Average Recall'
+            typeStr = '(AP)' if ap == 1 else '(AR)'
+            if F1:
+                titleStr = 'Average F1Score'
+                typeStr = '(F1)'
+
+            if open_range is not None:
+                titleStr = titleStr.replace("Average", open_range)
+
+            iouStr = '{:0.2f}:{:0.2f}'.format(p.iouThrs[0], p.iouThrs[-1]) \
+                if iouThr is None else '{:0.2f}'.format(iouThr)
+
+            aind = [
+                i for i, aRng in enumerate(p.areaRngLbl) if aRng == areaRng
+            ]
+            mind = [i for i, mDet in enumerate(p.maxDets) if mDet == maxDets]
+            if F1:
+                precision = cocoEval.eval['precision']
+                recall = cocoEval.eval['recall']
+                if iouThr is not None:
+                    t = np.where(iouThr == p.iouThrs)[0]
+                    precision = precision[t]
+                    recall = recall[t]
+                if open_range == "Known":
+                    precision = precision[:, :, :50, aind, mind]
+                    recall = recall[:, :50, aind, mind]
+                elif open_range == "Unknown":
+                    precision = precision[:, :, 50:, aind, mind]
+                    recall = recall[:, 50:, aind, mind]
+                else:
+                    precision = precision[:, :, :, aind, mind]
+                    recall = recall[:, :, aind, mind]
+
+                if len(precision[precision > -1]) == 0:
+                    mean_precision = -1
+                else:
+                    mean_precision = np.mean(precision[precision > -1])
+                if len(recall[recall > -1]) == 0:
+                    mean_recall = -1
+                else:
+                    mean_recall = np.mean(recall[recall > -1])
+                mean_F1 = 2 * mean_recall * mean_precision / (mean_recall + mean_precision + np.spacing(1))
+                print(
+                    iStr.format(titleStr, typeStr, iouStr, areaRng, maxDets,
+                                mean_F1))
+                return mean_F1
+
+            if ap == 1:
+                # dimension of precision: [TxRxKxAxM]
+                s = cocoEval.eval['precision']
+                # IoU
+                if iouThr is not None:
+                    t = np.where(iouThr == p.iouThrs)[0]
+                    s = s[t]
+                if open_range == "Known":
+                    s = s[:, :, :50, aind, mind]
+                elif open_range == "Unknown":
+                    s = s[:, :, 50:, aind, mind]
+                else:
+                    s = s[:, :, :, aind, mind]
+            else:
+                # dimension of recall: [TxKxAxM]
+                s = cocoEval.eval['recall']
+                if iouThr is not None:
+                    t = np.where(iouThr == p.iouThrs)[0]
+                    s = s[t]
+                if open_range == "Known":
+                    s = s[:, :50, aind, mind]
+                elif open_range == "Unknown":
+                    s = s[:, 50:, aind, mind]
+                else:
+                    s = s[:, :, aind, mind]
+            if len(s[s > -1]) == 0:
+                mean_s = -1
+            else:
+                mean_s = np.mean(s[s > -1])
+            print(
+                iStr.format(titleStr, typeStr, iouStr, areaRng, maxDets,
+                            mean_s))
+            return mean_s
+
+        def _summarizeDets():
+            stats = np.zeros((15,))
+            # All
+            stats[0] = _summarize(1)
+            stats[1] = _summarize(0, maxDets=cocoEval.params.maxDets[2])
+            stats[2] = _summarize(1, F1=True)
+            # Known
+            stats[3] = _summarize(1, open_range="Known")
+            stats[4] = _summarize(0, maxDets=cocoEval.params.maxDets[2], open_range="Known")
+            stats[5] = _summarize(1, F1=True, open_range="Known")
+            # Unkown
+            stats[6] = _summarize(1, open_range="Unknown")
+            stats[7] = _summarize(0, maxDets=cocoEval.params.maxDets[2], open_range="Unknown")
+            stats[8] = _summarize(1, F1=True, open_range="Unknown")
+            return stats
+
+        if not cocoEval.eval:
+            raise Exception('Please run accumulate() first')
+        iouType = cocoEval.params.iouType
+        summarize = _summarizeDets
+        cocoEval.stats = summarize()
+
+    def openevaluate(self,
+                     results,
+                     metric='bbox',
+                     logger=None,
+                     jsonfile_prefix=None,
+                     classwise=False,
+                     proposal_nums=(100, 300, 1000),
+                     iou_thrs=np.arange(0.5, 0.96, 0.05)):
+        """Evaluation in COCO protocol.
+
+        Args:
+            results (list[list | tuple]): Testing results of the dataset.
+            metric (str | list[str]): Metrics to be evaluated. Options are
+                'bbox', 'segm', 'proposal', 'proposal_fast'.
+            logger (logging.Logger | str | None): Logger used for printing
+                related information during evaluation. Default: None.
+            jsonfile_prefix (str | None): The prefix of json files. It includes
+                the file path and the prefix of filename, e.g., "a/b/prefix".
+                If not specified, a temp file will be created. Default: None.
+            classwise (bool): Whether to evaluating the AP for each class.
+            proposal_nums (Sequence[int]): Proposal number used for evaluating
+                recalls, such as recall@100, recall@1000.
+                Default: (100, 300, 1000).
+            iou_thrs (Sequence[float]): IoU threshold used for evaluating
+                recalls. If set to a list, the average recall of all IoUs will
+                also be computed. Default: 0.5.
+
+        Returns:
+            dict[str, float]: COCO style evaluation metric.
+        """
+
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['bbox', 'segm', 'proposal', 'proposal_fast']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
+        result_files, tmp_dir = self.format_results(results, jsonfile_prefix)
+
+        eval_results = {}
+        cocoGt = self.coco
+        for metric in metrics:
+            msg = f'Evaluating {metric}...'
+            if logger is None:
+                msg = '\n' + msg
+            print_log(msg, logger=logger)
+
+            if metric == 'proposal_fast':
+                ar = self.fast_eval_recall(
+                    results, proposal_nums, iou_thrs, logger='silent')
+                log_msg = []
+                for i, num in enumerate(proposal_nums):
+                    eval_results[f'AR@{num}'] = ar[i]
+                    log_msg.append(f'\nAR@{num}\t{ar[i]:.4f}')
+                log_msg = ''.join(log_msg)
+                print_log(log_msg, logger=logger)
+                continue
+
+            if metric not in result_files:
+                raise KeyError(f'{metric} is not in results')
+            try:
+                cocoDt = cocoGt.loadRes(result_files[metric])
+            except IndexError:
+                print_log(
+                    'The testing results of the whole dataset is empty.',
+                    logger=logger,
+                    level=logging.ERROR)
+                break
+            iou_type = 'bbox' if metric == 'proposal' else metric
+            cocoEval = COCOeval(cocoGt, cocoDt, iou_type)
+            cocoEval.params.catIds = self.cat_ids
+            cocoEval.params.imgIds = self.img_ids
+
+            cocoEval.evaluate()
+
+            # ############calculate centroids ######################
+            # cocoevalhelper.computeCentroids(cocoEval)
+
+            # cocoEval.accumulate()
+            self.accumulate(cocoEval)
+            self.opensummarize(cocoEval)
+
+            metric_items = [
+                'mAP', 'mAP_50', 'mAP_75', 'mAP_s', 'mAP_m', 'mAP_l'
+            ]
+            for i in range(len(metric_items)):
+                key = f'{metric}_{metric_items[i]}'
+                val = float(f'{cocoEval.stats[i]:.3f}')
+                eval_results[key] = val
+            ap = cocoEval.stats[:6]
+            eval_results[f'{metric}_mAP_copypaste'] = (
+                f'{ap[0]:.3f} {ap[1]:.3f} {ap[2]:.3f} {ap[3]:.3f} '
+                f'{ap[4]:.3f} {ap[5]:.3f}')
         if tmp_dir is not None:
             tmp_dir.cleanup()
         return eval_results
