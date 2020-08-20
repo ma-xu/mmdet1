@@ -64,26 +64,28 @@ mmdetection
 │   │   ├── val2017
 ...
 ```
-## Training Original Mask RCNN on Known classes
-Train with multiple GPUs
-```shell
-# ./tools/dist_train.sh ${CONFIG_FILE} ${GPU_NUM} [optional arguments]
-./tools/dist_train.sh configs/unknown/mask_rcnn_coco_50.py 8 --no-validate
-
-```
-
-## Saving the score (evaluate result) of training set
-```shell
-python test.py config/unknown/mask_rcnn_coco_50.py work_dirs/{mask_rcnn_coco_50}/{epoch_24.pth} --eval segm --out {path_to_score.pkl}
-
-```
 
 ## Calculating  centroids
-Here we save the result json and centroids of training dataset. <br>
-Change the saving path in helper/test_result.py Line 120, 127-129 accordingly.<br>
-Change the path to centroids in mmdet/datasets/coco.py Line 867 accordingly.<br>
-Calculate centroids:
+Here we can directly borrow the centroids from OpenMax with Mask RCNN.
+
+## Training OLTR with Mask RCNN
+Modify the "centroids_from" in config/unknown/mask_rcnn_OLTR50.py to ypur centroids path.<br>
+Then train OLTR with Mask RCNN:
 ```
-cd helper
-python test_result.py config/unknown/mask_rcnn_coco_50.py work_dirs/{mask_rcnn_coco_50}/{epoch_24.pth} --eval segm --out {path_to_score.pkl}
+./tools/dist_train.sh configs/unknown/mask_rcnn_OLTR50.py 8 --no-validate
+```
+
+## Evaluating OLTR with Mask RCNN
+Modify mmdet/datasets/coco.py line 62,63 for evaluation:
+```python
+# self.cat_ids = list(range(1,50+1))
+self.cat_ids = list(range(1, 51 + 1))  # for evaluation
+```
+Evaluate :
+```shell
+# single-gpu testing
+python tools/test.py configs/unknown/mask_rcnn_OLTR50.py work_dirs/mask_rcnn_OLTR50/epoch_24.pth --eval segm --openeval
+
+# multi-gpu testing
+./tools/dist_test.sh configs/unknown/mask_rcnn_OLTR50.py work_dirs/mask_rcnn_OLTR50/epoch_24.pth 8 --eval segm --openeval
 ```
