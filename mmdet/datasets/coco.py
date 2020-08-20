@@ -59,8 +59,8 @@ class CocoDataset(CustomDataset):
 
         self.coco = COCO(ann_file)
         # self.cat_ids = self.coco.get_cat_ids(cat_names=self.CLASSES)
-        # self.cat_ids = list(range(1,50+1))
-        self.cat_ids = list(range(1, 51 + 1))  # for evaluation
+        self.cat_ids = list(range(1,50+1))
+        # self.cat_ids = list(range(1, 51 + 1))  # for evaluation
 
         # print("____________running load_annotations____________")
         # print("________start: cat_ids_____________")
