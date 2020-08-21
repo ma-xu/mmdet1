@@ -38,7 +38,7 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
 
         seg_label = cur_result[0]
         print(f"seg_label is {seg_label}")
-        if seg_label is None:
+        if seg_label is None or len(seg_label)==0:
             continue
 
         cate_label = cur_result[1]
