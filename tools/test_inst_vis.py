@@ -258,6 +258,17 @@ def main():
 
     # build the model and load checkpoint
     model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
+    if cfg.centroids_from is not None:
+        centroids = mmcv.load(cfg.centroids_from)
+        if not isinstance(centroids, torch.Tensor):
+            # centroids would be dict from openmax
+            centroids = torch.tensor([centroids[i] for i in range(1, len(centroids) + 1)]).float()
+        # Consider the background class, padding 0
+        centroids = torch.cat([centroids, torch.zeros(1, centroids.shape[1]).to(centroids.device)], dim=0)
+        centroids = torch.cat([centroids, torch.zeros(centroids.shape[0], 1).to(centroids.device)], dim=1)
+        model.roi_head.bbox_head.centroids = centroids
+        print(f'Initialized centroids from {cfg.centroids_from}')
+
     fp16_cfg = cfg.get('fp16', None)
     if fp16_cfg is not None:
         wrap_fp16_model(model)
