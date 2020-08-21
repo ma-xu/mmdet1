@@ -64,7 +64,11 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
         except:
             seg_label = seg_label[0][vis_inds]
         num_mask = seg_label.shape[0]
-        cate_label = cate_label[vis_inds]
+        try:
+            cate_label = cate_label[vis_inds]
+        except:
+            cate_label = cate_label[0][vis_inds]
+        
         cate_score = score[vis_inds]
 
         mask_density = []
@@ -212,7 +216,7 @@ def parse_args():
         choices=['proposal', 'proposal_fast', 'bbox', 'segm', 'keypoints'],
         help='eval types')
     parser.add_argument('--show', action='store_true', help='show results')
-    parser.add_argument('--score_thr', type=float, default=0.3, help='score threshold for visualization')
+    parser.add_argument('--score_thr', type=float, default=0.2, help='score threshold for visualization')
     parser.add_argument('--tmpdir', help='tmp dir for writing some results')
     parser.add_argument('--save_dir', help='dir for saveing visualized images')
     parser.add_argument(
