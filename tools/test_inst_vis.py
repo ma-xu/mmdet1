@@ -68,7 +68,7 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
             cate_label = cate_label[vis_inds]
         except:
             cate_label = cate_label[0][vis_inds]
-        
+
         cate_score = score[vis_inds]
 
         mask_density = []
@@ -83,6 +83,7 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
         cate_score = cate_score[orders]
 
         seg_show = img_show.copy()
+        print(f"num_mask is {num_mask}")
         for idx in range(num_mask):
             idx = -(idx + 1)
             cur_mask = seg_label[idx, :, :]
