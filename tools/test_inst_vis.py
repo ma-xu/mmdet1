@@ -33,6 +33,7 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
     for img, img_meta, cur_result in zip(imgs, img_metas, result):
         if cur_result is None:
             continue
+        print(f"\n\n\n\n\n\n{cur_result}\n\n\n\n\n\n\n")
         h, w, _ = img_meta['img_shape']
         img_show = img[:h, :w, :]
 
@@ -54,12 +55,7 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
 
 
         vis_inds = score > score_thr
-        # print(f"vis_inds length: {len(vis_inds)}")
-        # print(f"seg_label length: {len(seg_label)}")
-        # print(f"vis_inds is: {vis_inds}")
-        # print(f"seg_label is: {seg_label}")
-        print(f"New seg_label is {seg_label}")
-        print(f"score is {score}")
+
         try:
             seg_label = seg_label[vis_inds]
         except:
