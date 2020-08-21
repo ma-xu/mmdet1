@@ -58,6 +58,7 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
         # print(f"seg_label length: {len(seg_label)}")
         # print(f"vis_inds is: {vis_inds}")
         # print(f"seg_label is: {seg_label}")
+        print(f"New seg_label is {seg_label}")
         try:
             seg_label = seg_label[vis_inds]
         except:
