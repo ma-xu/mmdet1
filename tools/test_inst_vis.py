@@ -50,8 +50,7 @@ def vis_seg(data, result, img_norm_cfg, data_id, colors, score_thr, save_dir):
         except:
             score = cur_result[2]
 
-        print(f"\nscore size is {score.size()}\n")
-        print(f"\nseg_label size is {seg_label.size()}\n")
+
         vis_inds = score > score_thr
         # print(f"vis_inds length: {len(vis_inds)}")
         # print(f"seg_label length: {len(seg_label)}")
