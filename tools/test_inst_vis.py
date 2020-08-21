@@ -217,7 +217,7 @@ def parse_args():
         choices=['proposal', 'proposal_fast', 'bbox', 'segm', 'keypoints'],
         help='eval types')
     parser.add_argument('--show', action='store_true', help='show results')
-    parser.add_argument('--score_thr', type=float, default=0.2, help='score threshold for visualization')
+    parser.add_argument('--score_thr', type=float, default=0.0, help='score threshold for visualization')
     parser.add_argument('--tmpdir', help='tmp dir for writing some results')
     parser.add_argument('--save_dir', help='dir for saveing visualized images')
     parser.add_argument(
