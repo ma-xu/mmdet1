@@ -47,6 +47,15 @@ class CocoDataset(CustomDataset):
     #            'kite', 'banana', 'carrot', 'hair drier', 'person', 'bird', 'sheep', 'spoon', 'dining table',
     #            'toothbrush', 'cow', 'knife', 'bicycle', 'motorcycle', 'frisbee', 'keyboard')
 
+    # Selected 50 +1 unown
+    CLASSES =('skis', 'person', 'zebra', 'snowboard', 'sheep', 'suitcase', 'fire hydrant',
+              'toaster', 'airplane', 'parking meter', 'orange', 'kite', 'cell phone', 'baseball glove',
+              'microwave', 'bowl', 'book', 'toilet', 'cake', 'wine glass', 'traffic light', 'mouse', 'bus',
+              'apple', 'baseball bat', 'tv', 'fork', 'donut', 'dog', 'bottle', 'chair', 'toothbrush',
+              'truck', 'broccoli', 'pizza', 'cow', 'keyboard', 'umbrella', 'spoon', 'bench', 'scissors',
+              'motorcycle', 'horse', 'tennis racket', 'boat', 'remote', 'train', 'skateboard', 'refrigerator',
+              'potted plant', 'unknown')
+
     def load_annotations(self, ann_file):
         """Load annotation from COCO style annotation file.
 
