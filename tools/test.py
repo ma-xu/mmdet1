@@ -139,8 +139,11 @@ def main():
     # for backward compatibility
     if 'CLASSES' in checkpoint['meta']:
         model.CLASSES = checkpoint['meta']['CLASSES']
+        print("here1")
     else:
         model.CLASSES = dataset.CLASSES
+        print("here2")
+    print(model.CLASSES)
 
     if not distributed:
         model = MMDataParallel(model, device_ids=[0])
