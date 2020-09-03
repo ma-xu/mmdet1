@@ -201,4 +201,4 @@ load_from = None
 workflow = [('train', 1)]
 
 # Initial centroids paths
-centroids_from = '/home/xuma/mmdet/work_dirs/mask_rcnn_osr50/centroids.pkl'
+centroids_from = '/home/g1007540910/mmdet1/work_dirs/mask_rcnn_OLTR50/centroids.pkl'
