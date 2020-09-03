@@ -137,13 +137,12 @@ def main():
         model = fuse_module(model)
     # old versions did not save class info in checkpoints, this walkaround is
     # for backward compatibility
-    if 'CLASSES' in checkpoint['meta']:
-        model.CLASSES = checkpoint['meta']['CLASSES']
-        print("here1")
-    else:
-        model.CLASSES = dataset.CLASSES
-        print("here2")
+    # if 'CLASSES' in checkpoint['meta']:
+    #     model.CLASSES = checkpoint['meta']['CLASSES']
+    # else:
+    model.CLASSES = dataset.CLASSES
     print(model.CLASSES)
+
 
     if not distributed:
         model = MMDataParallel(model, device_ids=[0])
