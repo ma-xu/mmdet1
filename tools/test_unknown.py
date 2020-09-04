@@ -90,7 +90,7 @@ def single_gpu_test(model,
             for i in range(0, len(bbox_result)):
                 if len(bbox_result[i])!=0:
                     for j in range(0,len(bbox_result[i])):
-                        if bbox_result[i][j][:, -1]<0.1:
+                        if bbox_result[i][j][-1]<0.1:
                             print(f"Original len: {len(bbox_result[i])}")
                             del bbox_result[i][j]
                             del segm_result[i][j]
