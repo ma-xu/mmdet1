@@ -115,6 +115,10 @@ def single_gpu_test(model,
                         new_segm_result[m] = temp_segm
                     # print(f"\n{i} new bbox_result: \n{new_bbox_result[i]}\n")
                     # print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
+            if unknown_bbox == []:
+                unknown_bbox = holder_bbox
+                unknown_segm = holder_segm
+
             new_bbox_result[-1] = np.asarray(unknown_bbox)
             new_segm_result[-1] = unknown_segm
 
