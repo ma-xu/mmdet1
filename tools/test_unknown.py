@@ -96,9 +96,12 @@ def single_gpu_test(model,
             unknown_bbox = []
             unknown_segm = []
             for i in range(0, len(bbox_result)):
+
                 if len(bbox_result[i])==0:
                     new_bbox_result[i] = bbox_result[i]
+                    holder_bbox = bbox_result[i]
                     new_segm_result[i] = segm_result[i]
+                    holder_segm = segm_result[i]
                 else:
                     temp_bbox = []
                     temp_segm = []
@@ -110,9 +113,13 @@ def single_gpu_test(model,
                         else:
                             unknown_bbox.append(bbox_result[i][j])
                             unknown_segm.append(segm_result[i][j])
-                    new_bbox_result[i] = temp_bbox
-                    new_segm_result[i] = temp_segm
-                    print(f"\n{i} new bbox_result: \n{new_bbox_result[i]}\n")
+                    if temp_bbox==[]:
+                        new_bbox_result[i] = holder_bbox
+                        new_segm_result[i] = holder_segm
+                    else:
+                        new_bbox_result[i] = temp_bbox
+                        new_segm_result[i] = temp_segm
+                    # print(f"\n{i} new bbox_result: \n{new_bbox_result[i]}\n")
                     # print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
             new_bbox_result[-1] = unknown_bbox
             new_segm_result[-1] = unknown_segm
