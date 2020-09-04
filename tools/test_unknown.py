@@ -83,8 +83,8 @@ def single_gpu_test(model,
     for i, data in enumerate(data_loader):
         with torch.no_grad():
             result = model(return_loss=False, rescale=True, **data)
-            print("\n\n")
-            print(f" tuple: {isinstance(result, tuple)}")
+            # print("\n\n")
+            # print(f" tuple: {isinstance(result, tuple)}")
             bbox_result, segm_result = result
 
             new_bbox_result = [[]]*(len(bbox_result)+1)
@@ -98,7 +98,7 @@ def single_gpu_test(model,
                 else:
                     temp_bbox = []
                     temp_segm = []
-                    print(f"\n{i} bbox_result len: {len(bbox_result[i])}")
+                    # print(f"\n{i} bbox_result len: {len(bbox_result[i])}")
                     for j in range(0,len(bbox_result[i])):
                         if bbox_result[i][j][-1] <= 0.1:
                             temp_bbox.append(bbox_result[i][j])
@@ -108,11 +108,12 @@ def single_gpu_test(model,
                             unknown_segm.append(segm_result[i][j])
                     new_bbox_result[i] = temp_bbox
                     new_segm_result[i] = temp_segm
-                    print(f"\n{i} new bbox_result len: {len(new_bbox_result[i])}")
-                    print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
+                    # print(f"\n{i} new bbox_result len: {len(new_bbox_result[i])}")
+                    # print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
             new_bbox_result[-1] = unknown_bbox
             new_segm_result[-1] = unknown_segm
-            print("___________________")
+            # print("___________________")
+            result = new_bbox_result,new_segm_result
 
         if show or out_dir:
             img_tensor = data['img'][0]
