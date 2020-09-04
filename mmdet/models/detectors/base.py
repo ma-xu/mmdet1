@@ -305,6 +305,7 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
             np.full(bbox.shape[0], i, dtype=np.int32)
             for i, bbox in enumerate(bbox_result)
         ]
+        print(f"\n labels:\n {labels}\n ")
         labels = np.concatenate(labels)
         # draw segmentation masks
         if segm_result is not None and len(labels) > 0:  # non empty
