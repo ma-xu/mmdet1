@@ -93,8 +93,8 @@ def single_gpu_test(model,
 
             new_bbox_result = [[]]*(len(bbox_result)+1)
             new_segm_result = [[]]*(len(bbox_result)+1)
-            unknown_bbox = None
-            unknown_segm = None
+            unknown_bbox = [None]
+            unknown_segm = [None]
             for i in range(0, len(bbox_result)):
                 if len(bbox_result[i])==0:
                     new_bbox_result[i] = bbox_result[i]
