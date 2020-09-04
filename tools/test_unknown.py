@@ -1,5 +1,6 @@
 import argparse
 import os
+import os.path as osp
 
 import mmcv
 import torch
@@ -8,10 +9,11 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import get_dist_info, init_dist, load_checkpoint
 from tools.fuse_conv_bn import fuse_module
 
-from mmdet.apis import multi_gpu_test, single_gpu_test
+from mmdet.apis import multi_gpu_test
 from mmdet.core import wrap_fp16_model
 from mmdet.datasets import build_dataloader, build_dataset
 from mmdet.models import build_detector
+from mmdet.core import encode_mask_results, tensor2imgs
 
 
 def parse_args():
@@ -66,6 +68,70 @@ def parse_args():
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
     return args
+
+
+def single_gpu_test(model,
+                    data_loader,
+                    show=False,
+                    out_dir=None,
+                    show_score_thr=0.3):
+    model.eval()
+    results = []
+    dataset = data_loader.dataset
+    prog_bar = mmcv.ProgressBar(len(dataset))
+    for i, data in enumerate(data_loader):
+        with torch.no_grad():
+            result = model(return_loss=False, rescale=True, **data)
+            print("\n\n")
+            print(f" tuple: {isinstance(result, tuple)}")
+            bbox_result, segm_result = result
+
+            unknown = []
+            for i in range(0, len(bbox_result)):
+                if len(bbox_result[i])!=0:
+                    for j in range(0,len(bbox_result[i])):
+                        print(f"detailed item: {bbox_result[i][j]}")
+
+
+           
+            # print(f"\nbbox_result: {bbox_result}\n")
+
+        if show or out_dir:
+            img_tensor = data['img'][0]
+            img_metas = data['img_metas'][0].data[0]
+            imgs = tensor2imgs(img_tensor, **img_metas[0]['img_norm_cfg'])
+            assert len(imgs) == len(img_metas)
+
+            for img, img_meta in zip(imgs, img_metas):
+                h, w, _ = img_meta['img_shape']
+                img_show = img[:h, :w, :]
+
+                ori_h, ori_w = img_meta['ori_shape'][:-1]
+                img_show = mmcv.imresize(img_show, (ori_w, ori_h))
+
+                if out_dir:
+                    out_file = osp.join(out_dir, img_meta['ori_filename'])
+                else:
+                    out_file = None
+
+                model.module.show_result(
+                    img_show,
+                    result,
+                    show=show,
+                    out_file=out_file,
+                    score_thr=show_score_thr)
+
+        # encode mask results
+        if isinstance(result, tuple):
+            bbox_results, mask_results = result
+            encoded_mask_results = encode_mask_results(mask_results)
+            result = bbox_results, encoded_mask_results
+        results.append(result)
+
+        batch_size = len(data['img_metas'][0].data)
+        for _ in range(batch_size):
+            prog_bar.update()
+    return results
 
 
 def main():
