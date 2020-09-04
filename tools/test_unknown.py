@@ -14,6 +14,7 @@ from mmdet.core import wrap_fp16_model
 from mmdet.datasets import build_dataloader, build_dataset
 from mmdet.models import build_detector
 from mmdet.core import encode_mask_results, tensor2imgs
+import numpy as np
 
 
 def parse_args():
@@ -86,15 +87,16 @@ def single_gpu_test(model,
             print(f" tuple: {isinstance(result, tuple)}")
             bbox_result, segm_result = result
 
+            new_bbox_result = bbox_result
+            new_bbox_result = segm_result
             unknown = []
             for i in range(0, len(bbox_result)):
                 if len(bbox_result[i])!=0:
                     for j in range(0,len(bbox_result[i])):
                         if bbox_result[i][j][-1]<0.1:
-                            print(f"Original len: {len(bbox_result[i])}")
-                            del bbox_result[i][j]
-                            del segm_result[i][j]
-                            print(f"Now this len: {len(bbox_result[i])}")
+                            print(f"Original len: {len(new_bbox_result[i])}")
+                            new_bbox_result = np.delete[new_bbox_result,[i][j]]
+                            print(f"Now this len: {len(new_bbox_result[i])}")
 
 
 
