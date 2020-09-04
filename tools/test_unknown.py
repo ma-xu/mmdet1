@@ -124,6 +124,8 @@ def single_gpu_test(model,
             print((new_bbox_result[1][0]).shape)
             print(f"Unknown: {new_bbox_result[-1]}")
             print((new_bbox_result[-1][0]).shape)
+            print(new_bbox_result[0])
+            print(new_bbox_result[37])
             # print("___________________")
             result = new_bbox_result,new_segm_result
 
