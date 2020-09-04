@@ -83,58 +83,41 @@ def single_gpu_test(model,
     for i, data in enumerate(data_loader):
         with torch.no_grad():
             result = model(return_loss=False, rescale=True, **data)
-            # print("\n\n")
-            # print(f" tuple: {isinstance(result, tuple)}")
+
             bbox_result, segm_result = result
-            # print(f"OLD bbox_result len:{len(bbox_result)}")
-            # lll = []
-            # [lll.append(len(tem)) for tem in bbox_result]
-            # print(f"each len:{lll}")
 
             new_bbox_result = [[]]*(len(bbox_result)+1)
             new_segm_result = [[]]*(len(bbox_result)+1)
             unknown_bbox = []
             unknown_segm = []
-            for i in range(0, len(bbox_result)):
-
-                if len(bbox_result[i])==0:
-                    new_bbox_result[i] = bbox_result[i]
-                    holder_bbox = bbox_result[i]
-                    new_segm_result[i] = segm_result[i]
-                    holder_segm = segm_result[i]
+            for m in range(0, len(bbox_result)):
+                if len(bbox_result[m])== 0:
+                    new_bbox_result[m] = bbox_result[m]
+                    holder_bbox = bbox_result[m]
+                    new_segm_result[m] = segm_result[m]
+                    holder_segm = segm_result[m]
                 else:
                     temp_bbox = []
                     temp_segm = []
                     # print(f"\n{i} bbox_result len: {len(bbox_result[i])}")
-                    for j in range(0,len(bbox_result[i])):
-                        if bbox_result[i][j][-1] > 0.1:
-                            temp_bbox.append(bbox_result[i][j])
-                            temp_segm.append(segm_result[i][j])
+                    for j in range(0, len(bbox_result[m])):
+                        if bbox_result[m][j][-1] > 0.1:
+                            temp_bbox.append(bbox_result[m][j])
+                            temp_segm.append(segm_result[m][j])
                         else:
-                            unknown_bbox.append(bbox_result[i][j])
-                            unknown_segm.append(segm_result[i][j])
+                            unknown_bbox.append(bbox_result[m][j])
+                            unknown_segm.append(segm_result[m][j])
                     if temp_bbox==[]:
-                        new_bbox_result[i] = holder_bbox
-                        new_segm_result[i] = holder_segm
+                        new_bbox_result[m] = holder_bbox
+                        new_segm_result[m] = holder_segm
                     else:
-                        new_bbox_result[i] = temp_bbox
-                        new_segm_result[i] = temp_segm
+                        new_bbox_result[m] = temp_bbox
+                        new_segm_result[m] = temp_segm
                     # print(f"\n{i} new bbox_result: \n{new_bbox_result[i]}\n")
                     # print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
             new_bbox_result[-1] = unknown_bbox
             new_segm_result[-1] = unknown_segm
-            # print(f"NEW bbox_result len:{len(new_bbox_result)}")
-            # lll = []
-            # [lll.append(len(tem)) for tem in new_bbox_result]
-            # print(f"each len:{lll}")
-            # print(f"Index 1: {new_bbox_result[1]}")
-            # print((new_bbox_result[1][0]).shape)
-            # print(f"Unknown: {new_bbox_result[-1]}")
-            # print((new_bbox_result[-1][0]).shape)
-            # print((new_bbox_result[0]).shape)
-            # print((new_bbox_result[37][0]).shape)
-            # # print("___________________")
-            # print(f"DEBUG\n{new_bbox_result}")
+
             result = new_bbox_result,new_segm_result
 
         if show or out_dir:

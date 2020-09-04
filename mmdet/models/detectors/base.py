@@ -301,8 +301,8 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
         else:
             bbox_result, segm_result = result, None
         bboxes = np.vstack(bbox_result)
-        for i, bbox in enumerate(bbox_result):
-            print(type(bbox))
+        # for i, bbox in enumerate(bbox_result):
+        #     print(type(bbox))
         labels = [
             np.full(bbox.shape[0], i, dtype=np.int32)
             for i, bbox in enumerate(bbox_result)
