@@ -120,6 +120,7 @@ def single_gpu_test(model,
             lll = []
             [lll.append(len(tem)) for tem in new_bbox_result]
             print(f"each len:{lll}")
+            print(f"Unknown: {unknown_bbox}")
             # print("___________________")
             result = new_bbox_result,new_segm_result
 
