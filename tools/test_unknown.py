@@ -121,7 +121,7 @@ def single_gpu_test(model,
             result = new_bbox_result,new_segm_result
 
             for k in range(0, len(bbox_result)):
-                print(f"{k}: {bbox_result[k]} {new_bbox_result[k]}")
+                print(f"{k}: {type(bbox_result[k])} {type(new_bbox_result[k])}")
 
 
 
