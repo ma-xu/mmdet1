@@ -89,21 +89,30 @@ def single_gpu_test(model,
 
             new_bbox_result = [[]]*(len(bbox_result)+1)
             new_segm_result = [[]]*(len(bbox_result)+1)
-            unknown = []
+            unknown_bbox = []
+            unknown_segm = []
             for i in range(0, len(bbox_result)):
-                if len(bbox_result[i])!=0:
-                    print(f"\n{i} bbox len: {len(bbox_result[i])}\n")
+                if len(bbox_result[i])==0:
+                    new_bbox_result[i] = bbox_result[i]
+                    new_segm_result[i] = segm_result[i]
+                else:
+                    temp_bbox = []
+                    temp_segm = []
+                    print(f"\n{i} bbox_result len: {len(bbox_result[i])}")
                     for j in range(0,len(bbox_result[i])):
                         if bbox_result[i][j][-1] <= 0.1:
-                            new_bbox_result[-1].append(bbox_result[i][j])
-                            new_segm_result[-1].append(segm_result[i][j])
+                            temp_bbox.append(bbox_result[i][j])
+                            temp_segm.append(segm_result[i][j])
                         else:
-                            new_bbox_result[i].append(bbox_result[i][j])
-                            new_segm_result[i].append(segm_result[i][j])
-                    print(f"\n{i} new_bbox len: {len(new_bbox_result[i])}\n")
-                    print(f"\n{i} unkown_bbox len: {len(new_bbox_result[-1])}\n")
-
-            # print(f"\nbbox_result: {bbox_result}\n")
+                            unknown_bbox.append(bbox_result[i][j])
+                            unknown_segm.append(segm_result[i][j])
+                    new_bbox_result[i] = temp_bbox
+                    new_segm_result[i] = temp_segm
+                    print(f"\n{i} new bbox_result len: {len(new_bbox_result[i])}")
+                    print(f"\n{i} new unknown_bbox len: {len(new_bbox_result[i])}")
+            new_bbox_result[-1] = unknown_bbox
+            new_segm_result[-1] = unknown_segm
+            print("___________________")
 
         if show or out_dir:
             img_tensor = data['img'][0]
