@@ -90,10 +90,14 @@ def single_gpu_test(model,
             for i in range(0, len(bbox_result)):
                 if len(bbox_result[i])!=0:
                     for j in range(0,len(bbox_result[i])):
-                        print(f"detailed item: {bbox_result[i][j]}")
+                        if bbox_result[i][j][:, -1]<0.1:
+                            print(f"Original len: {len(bbox_result[i])}")
+                            del bbox_result[i][j]
+                            del segm_result[i][j]
+                            print(f"Now this len: {len(bbox_result[i])}")
 
 
-           
+
             # print(f"\nbbox_result: {bbox_result}\n")
 
         if show or out_dir:
