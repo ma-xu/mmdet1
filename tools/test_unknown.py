@@ -95,7 +95,7 @@ def single_gpu_test(model,
                     for j in range(0,len(bbox_result[i])):
                         if bbox_result[i][j][-1]<0.1:
                             print(f"Original len: {len(new_bbox_result[i])}")
-                            new_bbox_result = np.delete[new_bbox_result,[i][j]]
+                            bbox_result[i].pop(j)
                             print(f"Now this len: {len(new_bbox_result[i])}")
 
 
