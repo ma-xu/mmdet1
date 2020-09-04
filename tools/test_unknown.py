@@ -86,15 +86,15 @@ def single_gpu_test(model,
             # print("\n\n")
             # print(f" tuple: {isinstance(result, tuple)}")
             bbox_result, segm_result = result
-            print(f"OLD bbox_result len:{len(bbox_result)}")
-            lll = []
-            [lll.append(len(tem)) for tem in bbox_result]
-            print(f"each len:{lll}")
+            # print(f"OLD bbox_result len:{len(bbox_result)}")
+            # lll = []
+            # [lll.append(len(tem)) for tem in bbox_result]
+            # print(f"each len:{lll}")
 
             new_bbox_result = [[]]*(len(bbox_result)+1)
             new_segm_result = [[]]*(len(bbox_result)+1)
-            unknown_bbox = []
-            unknown_segm = []
+            unknown_bbox = None
+            unknown_segm = None
             for i in range(0, len(bbox_result)):
                 if len(bbox_result[i])==0:
                     new_bbox_result[i] = bbox_result[i]
@@ -116,18 +116,18 @@ def single_gpu_test(model,
                     # print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
             new_bbox_result[-1] = unknown_bbox
             new_segm_result[-1] = unknown_segm
-            print(f"NEW bbox_result len:{len(new_bbox_result)}")
-            lll = []
-            [lll.append(len(tem)) for tem in new_bbox_result]
-            print(f"each len:{lll}")
-            print(f"Index 1: {new_bbox_result[1]}")
-            print((new_bbox_result[1][0]).shape)
-            print(f"Unknown: {new_bbox_result[-1]}")
-            print((new_bbox_result[-1][0]).shape)
-            print(new_bbox_result[0])
-            print(new_bbox_result[37])
-            # print("___________________")
-            print(f"DEBUG\n{new_bbox_result}")
+            # print(f"NEW bbox_result len:{len(new_bbox_result)}")
+            # lll = []
+            # [lll.append(len(tem)) for tem in new_bbox_result]
+            # print(f"each len:{lll}")
+            # print(f"Index 1: {new_bbox_result[1]}")
+            # print((new_bbox_result[1][0]).shape)
+            # print(f"Unknown: {new_bbox_result[-1]}")
+            # print((new_bbox_result[-1][0]).shape)
+            # print(new_bbox_result[0])
+            # print(new_bbox_result[37])
+            # # print("___________________")
+            # print(f"DEBUG\n{new_bbox_result}")
             result = new_bbox_result,new_segm_result
 
         if show or out_dir:
