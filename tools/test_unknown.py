@@ -105,6 +105,7 @@ def single_gpu_test(model,
                             temp_bbox.append(bbox_result[m][j])
                             temp_segm.append(segm_result[m][j])
                         else:
+                            bbox_result[m][j][-1] = bbox_result[m][j][-1]+0.3 # for visualization
                             unknown_bbox.append(bbox_result[m][j])
                             unknown_segm.append(segm_result[m][j])
                     if temp_bbox==[]:
