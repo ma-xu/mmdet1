@@ -86,6 +86,10 @@ def single_gpu_test(model,
             # print("\n\n")
             # print(f" tuple: {isinstance(result, tuple)}")
             bbox_result, segm_result = result
+            print(f"OLD bbox_result len:{len(bbox_result)}")
+            lll = []
+            [lll.append(len(tem)) for tem in bbox_result]
+            print(f"each len:{lll}")
 
             new_bbox_result = [[]]*(len(bbox_result)+1)
             new_segm_result = [[]]*(len(bbox_result)+1)
@@ -112,6 +116,10 @@ def single_gpu_test(model,
                     # print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
             new_bbox_result[-1] = unknown_bbox
             new_segm_result[-1] = unknown_segm
+            print(f"NEW bbox_result len:{len(new_bbox_result)}")
+            lll = []
+            [lll.append(len(tem)) for tem in new_bbox_result]
+            print(f"each len:{lll}")
             # print("___________________")
             result = new_bbox_result,new_segm_result
 
