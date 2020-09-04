@@ -28,8 +28,11 @@ def single_gpu_test(model,
             print(f" tuple: {isinstance(result, tuple)}")
             bbox_result, segm_result = result
             print(f"\ntype of bbox_result: {type(bbox_result)}\n")
-            print(f"\ntype of length: {len(bbox_result)}\n")
-            print(f"\nbbox_result: {bbox_result}\n")
+            print(f"\nbbox of length: {len(bbox_result)}\n___________\n")
+
+            print(f"\ntype of segm_result: {type(segm_result)}\n")
+            print(f"\nsegm of length: {len(segm_result)}\n")
+            # print(f"\nbbox_result: {bbox_result}\n")
 
         if show or out_dir:
             img_tensor = data['img'][0]
