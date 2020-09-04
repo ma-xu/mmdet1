@@ -300,6 +300,7 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
                 segm_result = segm_result[0]  # ms rcnn
         else:
             bbox_result, segm_result = result, None
+        print(f"DEBUG\n{bbox_result}")
         bboxes = np.vstack(bbox_result)
         labels = [
             np.full(bbox.shape[0], i, dtype=np.int32)
