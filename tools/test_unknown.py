@@ -87,18 +87,21 @@ def single_gpu_test(model,
             print(f" tuple: {isinstance(result, tuple)}")
             bbox_result, segm_result = result
 
-            new_bbox_result = bbox_result
-            new_bbox_result = segm_result
+            new_bbox_result = [[]]*(len(bbox_result)+1)
+            new_segm_result = [[]]*(len(bbox_result)+1)
             unknown = []
             for i in range(0, len(bbox_result)):
                 if len(bbox_result[i])!=0:
+                    print(f"\n{i} bbox len: {len(bbox_result[i])}\n")
                     for j in range(0,len(bbox_result[i])):
-                        if bbox_result[i][j][-1]<0.1:
-                            print(f"Original len: {len(new_bbox_result[i])}")
-                            bbox_result[i].pop(j)
-                            print(f"Now this len: {len(new_bbox_result[i])}")
-
-
+                        if bbox_result[i][j][-1] <= 0.1:
+                            new_bbox_result[-1].append(bbox_result[i][j])
+                            new_segm_result[-1].append(segm_result[i][j])
+                        else:
+                            new_bbox_result[i].append(bbox_result[i][j])
+                            new_segm_result[i].append(segm_result[i][j])
+                    print(f"\n{i} new_bbox len: {len(new_bbox_result[i])}\n")
+                    print(f"\n{i} unkown_bbox len: {len(new_bbox_result[-1])}\n")
 
             # print(f"\nbbox_result: {bbox_result}\n")
 
