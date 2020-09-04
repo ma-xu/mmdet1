@@ -109,7 +109,7 @@ def single_gpu_test(model,
                     new_bbox_result[i] = temp_bbox
                     new_segm_result[i] = temp_segm
                     print(f"\n{i} new bbox_result len: {len(new_bbox_result[i])}")
-                    print(f"\n{i} new unknown_bbox len: {len(unknown_bbox[i])}")
+                    print(f"\n{i} new unknown_bbox len: {len(unknown_bbox)}")
             new_bbox_result[-1] = unknown_bbox
             new_segm_result[-1] = unknown_segm
             print("___________________")
