@@ -93,8 +93,8 @@ def single_gpu_test(model,
 
             new_bbox_result = [[]]*(len(bbox_result)+1)
             new_segm_result = [[]]*(len(bbox_result)+1)
-            unknown_bbox = [None]
-            unknown_segm = [None]
+            unknown_bbox = []
+            unknown_segm = []
             for i in range(0, len(bbox_result)):
                 if len(bbox_result[i])==0:
                     new_bbox_result[i] = bbox_result[i]
@@ -124,11 +124,11 @@ def single_gpu_test(model,
             # print((new_bbox_result[1][0]).shape)
             # print(f"Unknown: {new_bbox_result[-1]}")
             # print((new_bbox_result[-1][0]).shape)
-            # print(new_bbox_result[0])
-            # print(new_bbox_result[37])
+            print((new_bbox_result[0]).shape)
+            print((new_bbox_result[37]).shape)
             # # print("___________________")
             # print(f"DEBUG\n{new_bbox_result}")
-            result = new_bbox_result,new_segm_result
+            # result = new_bbox_result,new_segm_result
 
         if show or out_dir:
             img_tensor = data['img'][0]
