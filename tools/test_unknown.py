@@ -127,6 +127,7 @@ def single_gpu_test(model,
             print(new_bbox_result[0])
             print(new_bbox_result[37])
             # print("___________________")
+            print(f"DEBUG\n{bbox_result}")
             result = new_bbox_result,new_segm_result
 
         if show or out_dir:
