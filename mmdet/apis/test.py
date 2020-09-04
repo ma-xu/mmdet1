@@ -24,6 +24,10 @@ def single_gpu_test(model,
     for i, data in enumerate(data_loader):
         with torch.no_grad():
             result = model(return_loss=False, rescale=True, **data)
+            print("\n\n")
+            print(f" tuple: {isinstance(result, tuple)}")
+            bbox_result, segm_result = result
+            print(f"\ntype of bbox_result: {type(bbox_result)}\n")
 
         if show or out_dir:
             img_tensor = data['img'][0]
